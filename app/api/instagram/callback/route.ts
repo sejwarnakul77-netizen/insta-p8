@@ -76,6 +76,16 @@ export async function POST(request: NextRequest) {
     const instagramUserId = String(account.id)
     const username = account.username || `instagram_${instagramUserId}`
     const profilePic = account.profile_picture_url || null
+
+    // Subscribe this shared Instagram professional account to the app's webhook fields.
+    // A successful app-level webhook test alone does not subscribe each Unified Login asset.
+    const subscribeUrl = `${GRAPH}/${instagramUserId}/subscribed_apps?subscribed_fields=messages,comments&access_token=${encodeURIComponent(accessToken)}`
+    const subscribeRes = await fetch(subscribeUrl, { method: "POST", cache: "no-store" })
+    const subscribeData = await subscribeRes.json()
+    const webhookSubscribed = subscribeRes.ok && !subscribeData.error
+    if (!webhookSubscribed) {
+      console.error("[unified-login] Webhook subscription failed:", subscribeData.error || subscribeData)
+    }
     const expiresAt = typeof tokenData.expires_in === "number" && tokenData.expires_in > 0
       ? new Date(Date.now() + tokenData.expires_in * 1000).toISOString()
       : null
