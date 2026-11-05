@@ -23,6 +23,10 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "User not found" }, { status: 404 })
         }
 
+        if (!user.business_account_id) {
+            return NextResponse.json({ error: "Instagram account ID missing. Please reconnect Instagram." }, { status: 400 })
+        }
+
         // 2. Prepare Payload for Instagram API
         const apiBody: any = { recipient: { id: recipientId } }
 
@@ -34,7 +38,7 @@ export async function POST(request: NextRequest) {
 
         // 3. Send to Instagram
         const res = await fetch(
-            `https://graph.instagram.com/v24.0/me/messages?access_token=${user.access_token}`,
+            `https://graph.facebook.com/v27.0/${user.business_account_id}/messages?access_token=${encodeURIComponent(user.access_token)}`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
