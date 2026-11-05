@@ -410,6 +410,7 @@ export async function POST(request: NextRequest) {
                       if (replyMode !== "public_only") {
                         await sendAutomationResponse(
                           user.access_token,
+                          user.business_account_id,
                           { comment_id: commentId },
                           content,
                           { skipTyping: true },
