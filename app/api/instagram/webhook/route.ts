@@ -363,6 +363,7 @@ export async function POST(request: NextRequest) {
                         if (replyMode !== "public_only") {
                           await sendCardDM(
                             user.access_token,
+                            user.business_account_id,
                             { comment_id: commentId },
                             buildFollowGateCard({ username: user.username, ruleId: match.id }),
                           )
@@ -379,6 +380,7 @@ export async function POST(request: NextRequest) {
                           if (replyMode !== "public_only") {
                             await sendCardDM(
                               user.access_token,
+                              user.business_account_id,
                               { comment_id: commentId },
                               buildFollowGateCard({ username: user.username, ruleId: match.id }),
                             )
