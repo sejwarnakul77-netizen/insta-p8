@@ -1,4 +1,4 @@
-const GRAPH = "https://graph.instagram.com/v24.0"
+const GRAPH = "https://graph.facebook.com/v27.0"
 
 export interface IGButton {
   type: "web_url" | "postback"
@@ -89,6 +89,7 @@ export function buildFollowGateCard(params: {
 
 export async function sendTextDM(
   token: string,
+  igUserId: string,
   recipient: { id?: string; comment_id?: string },
   text: string,
   quickReplies?: QuickReply[],
@@ -101,24 +102,26 @@ export async function sendTextDM(
       payload: q.payload,
     }))
   }
-  return post("me/messages", token, { recipient, message })
+  return post(`${igUserId}/messages`, token, { recipient, message })
 }
 
 export async function sendCardDM(
   token: string,
+  igUserId: string,
   recipient: { id?: string; comment_id?: string },
   card: IGCard,
 ): Promise<SendResult> {
-  return post("me/messages", token, { recipient, message: buildCardAttachment(card) })
+  return post(`${igUserId}/messages`, token, { recipient, message: buildCardAttachment(card) })
 }
 
 export async function sendMediaDM(
   token: string,
+  igUserId: string,
   recipient: { id?: string; comment_id?: string },
   mediaType: "image" | "video" | "audio",
   url: string,
 ): Promise<SendResult> {
-  return post("me/messages", token, {
+  return post(`${igUserId}/messages`, token, {
     recipient,
     message: { attachment: { type: mediaType, payload: { url } } },
   })
@@ -126,19 +129,21 @@ export async function sendMediaDM(
 
 export async function sendSenderAction(
   token: string,
+  igUserId: string,
   recipientId: string,
   action: "typing_on" | "typing_off" | "mark_seen",
 ): Promise<SendResult> {
-  return post("me/messages", token, { recipient: { id: recipientId }, sender_action: action })
+  return post(`${igUserId}/messages`, token, { recipient: { id: recipientId }, sender_action: action })
 }
 
 export async function sendMessageReaction(
   token: string,
+  igUserId: string,
   recipientId: string,
   messageId: string,
   reaction = "love",
 ): Promise<SendResult> {
-  return post("me/messages", token, {
+  return post(`${igUserId}/messages`, token, {
     recipient: { id: recipientId },
     sender_action: "react",
     payload: { message_id: messageId, reaction },
