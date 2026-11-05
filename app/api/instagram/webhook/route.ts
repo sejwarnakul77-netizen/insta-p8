@@ -395,7 +395,6 @@ export async function POST(request: NextRequest) {
                             await sendAutomationResponse(
                               user.access_token,
                               user.business_account_id,
-                              user.business_account_id,
                               { comment_id: commentId },
                               content,
                               { skipTyping: true },
