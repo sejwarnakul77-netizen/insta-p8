@@ -732,6 +732,7 @@ export async function POST(request: NextRequest) {
                                                     console.warn(`[webhook] ⚠️ DM unlock gate capped after ${attempts} unverifiable attempts for @${senderId} / rule ${match.id}`)
                                                     const result = await sendTextDM(
                                                       user.access_token,
+                                                      user.business_account_id,
                                                       { id: senderId },
                                                       "⚠️ We couldn't verify your follow yet. Please reach out if this keeps happening.",
                                                     )
