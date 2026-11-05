@@ -213,7 +213,7 @@ ManyChat is great, but it is closed-source and paid. InstaAuto is for people who
 - **Storage:** Supabase Storage
 - **Deployment:** Vercel
 - **Analytics:** Vercel Analytics
-- **Instagram API:** Instagram API with Instagram Login, Graph API v24.0
+- **Instagram API:** Instagram API with Meta Unified Login, Graph API v27.0
 - **AI Gateway:** Groq/OpenAI-compatible proxy pattern
 
 ---
@@ -355,10 +355,11 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
-NEXT_PUBLIC_INSTAGRAM_APP_ID=your_instagram_app_id
-INSTAGRAM_APP_ID=your_instagram_app_id
-INSTAGRAM_APP_SECRET=your_instagram_app_secret
-NEXT_PUBLIC_INSTAGRAM_REDIRECT_URI=http://localhost:3000/api/instagram/callback
+NEXT_PUBLIC_META_APP_ID=your_meta_app_id
+META_APP_ID=your_meta_app_id
+META_APP_SECRET=your_meta_app_secret
+NEXT_PUBLIC_INSTAGRAM_CONFIG_ID=your_unified_login_config_id
+NEXT_PUBLIC_INSTAGRAM_REDIRECT_URI=https://your-domain.com/api/instagram/callback
 INSTAGRAM_WEBHOOK_VERIFY_TOKEN=choose_a_strong_verify_token
 
 GATEWAY_SECRET=your_ai_gateway_secret
@@ -386,10 +387,10 @@ http://localhost:3000
 | `NEXT_PUBLIC_SUPABASE_URL` | ✅ | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ | Supabase anon/public key |
 | `SUPABASE_SERVICE_ROLE_KEY` | ✅ | Supabase service role key for API routes |
-| `NEXT_PUBLIC_INSTAGRAM_APP_ID` | ✅ | Public Instagram app/client ID |
-| `INSTAGRAM_APP_ID` | ✅ | Server-side Instagram app ID |
-| `INSTAGRAM_APP_SECRET` | ✅ | Instagram app secret for token exchange |
-| `NEXT_PUBLIC_INSTAGRAM_REDIRECT_URI` | ✅ | OAuth redirect URI |
+| `NEXT_PUBLIC_META_APP_ID` | ✅ | Public Meta App ID for Unified Login |
+| `META_APP_ID` | ✅ | Server-side Meta App ID |
+| `META_APP_SECRET` | ✅ | Meta App Secret for Unified Login token exchange |
+| `NEXT_PUBLIC_INSTAGRAM_CONFIG_ID` | ✅ | Unified Login configuration ID |\n| `NEXT_PUBLIC_INSTAGRAM_REDIRECT_URI` | ✅ | OAuth redirect URI |
 | `INSTAGRAM_WEBHOOK_VERIFY_TOKEN` | ✅ | Webhook verification token |
 | `GATEWAY_SECRET` | Optional | Secret used for AI gateway/proxy calls |
 | `API_SECRET_KEY` | Optional | Internal API secret for publishing hooks |
