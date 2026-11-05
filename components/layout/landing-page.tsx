@@ -9,23 +9,30 @@ import {
 } from "lucide-react"
 
 const TELEGRAM_URL = "https://t.me/instagramautomationp8"
-const GITHUB_URL = "https://github.com/ayuuxh2/insta-p8"
+const GITHUB_URL = "https://github.com/sejwarnakul77-netizen/insta-p8"
 
 export function LandingPage() {
   const [stars, setStars] = useState<number | null>(null)
   const router = useRouter()
 
   useEffect(() => {
-    fetch("https://api.github.com/repos/ayuuxh2/insta-p8")
+    fetch("https://api.github.com/repos/sejwarnakul77-netizen/insta-p8")
       .then(r => r.json())
       .then(d => { if (typeof d.stargazers_count === "number") setStars(d.stargazers_count) })
       .catch(() => {})
   }, [])
 
   const handleLogin = () => {
-    // Instagram Business Login (Instagram API with Instagram Login). client_id must be the
-    // Instagram app ID from the Instagram product page, not the parent Meta app ID.
-    window.location.href = `https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=${process.env.NEXT_PUBLIC_INSTAGRAM_APP_ID}&redirect_uri=${process.env.NEXT_PUBLIC_INSTAGRAM_REDIRECT_URI}&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments`
+    // Meta Unified Login. The dialog offers Instagram sign-in; a Facebook Page is not required.
+    const params = new URLSearchParams({
+      client_id: process.env.NEXT_PUBLIC_META_APP_ID || process.env.NEXT_PUBLIC_INSTAGRAM_APP_ID || "1753831466409131",
+      config_id: process.env.NEXT_PUBLIC_INSTAGRAM_CONFIG_ID || "2084219245535228",
+      redirect_uri: process.env.NEXT_PUBLIC_INSTAGRAM_REDIRECT_URI || "https://insta-p8-lake.vercel.app/api/instagram/callback",
+      response_type: "code",
+      override_default_response_type: "true",
+      prompt: "login",
+    })
+    window.location.href = `https://www.facebook.com/dialog/oauth?${params.toString()}`
   }
 
   const handleTestLogin = () => {
