@@ -12,6 +12,7 @@ let _running: Promise<void> | null = null
  *   - CREATE TABLE IF NOT EXISTS
  *   - CREATE INDEX IF NOT EXISTS
  *   - CREATE EXTENSION IF NOT EXISTS
+ *   - ALTER TABLE ... ENABLE ROW LEVEL SECURITY
  *   - CREATE OR REPLACE FUNCTION (plpgsql RPCs, including $$ ... $$ bodies)
  *
  * Manual one-time setup (apply via Supabase SQL editor -- anon role required):
