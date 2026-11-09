@@ -431,3 +431,22 @@ $$;
 -- Or run manually in the SQL editor:
 --   DELETE FROM public.unlock_attempts WHERE updated_at < NOW() - INTERVAL '24 hours';
 -- =========================================================================
+
+
+-- ==========================================
+-- 13. Table: public.documents
+-- User-uploaded Markdown documents and their readable titles.
+-- ==========================================
+CREATE TABLE IF NOT EXISTS public.documents (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id BIGINT NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_documents_user_updated
+  ON public.documents(user_id, updated_at DESC);
+
+ALTER TABLE public.documents ENABLE ROW LEVEL SECURITY;
