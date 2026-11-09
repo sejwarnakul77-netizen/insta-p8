@@ -11,7 +11,7 @@ function getSessionUserId(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  const userId = getSessionUserId(request) ? Number(getSessionUserId(request)) : null
+  const userId = getSessionUserId(request)
   if (!userId) return NextResponse.json({ error: "Please connect Instagram first." }, { status: 401 })
   try {
     const { data, error } = await getSupabaseAdmin().from("documents")
