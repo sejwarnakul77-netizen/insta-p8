@@ -99,7 +99,7 @@ function parseSafeStatements(sql: string): string[] {
 
   for (const line of lines) {
     const trimmed = line.trim()
-    const starts = /^(CREATE\s+(TABLE|INDEX|EXTENSION)\s+IF\s+NOT\s+EXISTS|CREATE\s+OR\s+REPLACE\s+FUNCTION)/i.test(trimmed)
+    const starts = /^(CREATE\s+(TABLE|INDEX|EXTENSION)\s+IF\s+NOT\s+EXISTS|CREATE\s+OR\s+REPLACE\s+FUNCTION|ALTER\s+TABLE\s+[\w.]+\s+ENABLE\s+ROW\s+LEVEL\s+SECURITY)/i.test(trimmed)
 
     if (!inStatement && starts) {
       inStatement = true
