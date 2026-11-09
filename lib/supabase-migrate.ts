@@ -31,6 +31,7 @@ const EXPECTED_TABLES = [
   "reels_posts",
   "dm_queue",
   "unlock_attempts",
+  "documents",
 ]
 
 export async function ensureSchema(): Promise<void> {
