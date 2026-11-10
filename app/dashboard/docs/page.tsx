@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
-import { ArrowLeft, BookOpen, FileText, Loader2, Plus, Search, Trash2, Upload } from "lucide-react"
+import { ArrowLeft, BookOpen, FileText, Loader2, Pencil, Plus, Search, Trash2, Upload } from "lucide-react"
 
 type Doc = { id: string; title: string; created_at: string; updated_at: string; content?: string }
 
@@ -55,6 +55,7 @@ export default function DocumentsPage() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState("")
   const [showUpload, setShowUpload] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const load = async () => {
@@ -77,10 +78,10 @@ export default function DocumentsPage() {
   async function save() {
     setBusy(true); setError("")
     try {
-      const response = await fetch("/api/documents", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, content }) })
+      const response = await fetch(editingId ? "/api/documents/" + editingId : "/api/documents", { method: editingId ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, content }) })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || "Save failed")
-      await load(); setSelected({ ...data, content }); setShowUpload(false); setTitle(""); setContent("")
+      await load(); setSelected({ ...data, content }); setShowUpload(false); setEditingId(null); setTitle(""); setContent("")
       if (fileRef.current) fileRef.current.value = ""
     } catch (e) { setError(e instanceof Error ? e.message : "Save failed") }
     finally { setBusy(false) }
@@ -113,13 +114,13 @@ export default function DocumentsPage() {
     </header>
     {error && <div role="alert" className="mb-4 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">{error}</div>}
     {showUpload && <section className="mb-6 rounded-xl border border-border bg-card p-5">
-      <div className="mb-4 flex items-center justify-between"><h2 className="font-semibold">Save Markdown document</h2><button onClick={() => setShowUpload(false)} className="text-sm text-muted-foreground">Cancel</button></div>
+      <div className="mb-4 flex items-center justify-between"><h2 className="font-semibold">{editingId ? "Edit Markdown document" : "Save Markdown document"}</h2><button onClick={() => { setShowUpload(false); setEditingId(null); setTitle(""); setContent("") }}} className="text-sm text-muted-foreground">Cancel</button></div>
       <label className="mb-1 block text-xs font-medium">Document title</label><input value={title} onChange={e=>setTitle(e.target.value)} className="mb-3 h-10 w-full rounded-lg border border-input bg-background px-3 text-sm"/>
       <label className="mb-1 block text-xs font-medium">Markdown content</label><textarea value={content} onChange={e=>setContent(e.target.value)} rows={9} className="w-full rounded-lg border border-input bg-background p-3 font-mono text-xs"/>
-      <button disabled={busy || !title.trim() || !content.trim()} onClick={save} className="mt-3 inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground disabled:opacity-50">{busy ? <Loader2 className="size-4 animate-spin"/> : <Plus className="size-4"/>} Save to library</button>
+      <button disabled={busy || !title.trim() || !content.trim()} onClick={save} className="mt-3 inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground disabled:opacity-50">{busy ? <Loader2 className="size-4 animate-spin"/> : editingId ? <Pencil className="size-4"/> : <Plus className="size-4"/>} {editingId ? "Save changes" : "Save to library"}</button>
     </section>}
     {selected ? <article className="overflow-hidden rounded-xl border border-border bg-card">
-      <div className="flex items-center justify-between border-b border-border px-5 py-4"><button onClick={()=>setSelected(null)} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4"/> All documents</button><span className="text-xs text-muted-foreground">Markdown document</span></div>
+      <div className="flex items-center justify-between border-b border-border px-5 py-4"><button onClick={()=>setSelected(null)} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4"/> All documents</button><div className="flex items-center gap-3"><span className="text-xs text-muted-foreground">Markdown document</span><button onClick={() => { setTitle(selected.title); setContent(selected.content || ""); setEditingId(selected.id); setShowUpload(true) }} className="inline-flex h-8 items-center gap-2 rounded-lg border border-border px-3 text-sm font-medium hover:bg-muted"><Pencil className="size-3.5"/> Edit</button></div></div>
       <div className="mx-auto max-w-4xl px-6 py-10 sm:px-12"><h2 className="mb-8 text-3xl font-semibold tracking-tight">{selected.title}</h2><div className="markdown-view" dangerouslySetInnerHTML={{ __html: renderMarkdown(selected.content || "") }}/></div>
     </article> : <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
       <aside className="rounded-xl border border-border bg-card p-4"><div className="relative"><Search className="absolute left-3 top-2.5 size-4 text-muted-foreground"/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search documents" className="h-9 w-full rounded-lg border border-input bg-background pl-9 pr-3 text-sm"/></div>
