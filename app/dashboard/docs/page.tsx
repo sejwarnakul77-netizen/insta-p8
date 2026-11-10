@@ -59,7 +59,20 @@ export default function DocumentsPage() {
   const fileRef = useRef<HTMLInputElement>(null)
 
   const load = async () => {
-    const response = await fetch("/api/documents")
+    // Older browser sessions may have the Instagram identity in localStorage
+    // but predate the HttpOnly server cookie. Revalidate the saved account and
+    // restore the cookie before calling the documents API.
+    const savedInstagramId = localStorage.getItem("ig_user_id")
+    if (savedInstagramId) {
+      const sessionResponse = await fetch("/api/instagram/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: savedInstagramId }),
+      })
+      const sessionData = await sessionResponse.json()
+      if (!sessionResponse.ok) throw new Error(sessionData.error || "Instagram session expired. Please reconnect Instagram.")
+    }
+    const response = await fetch("/api/documents", { cache: "no-store" })
     const data = await response.json()
     if (!response.ok) throw new Error(data.error || "Could not load documents")
     setDocs(data)
