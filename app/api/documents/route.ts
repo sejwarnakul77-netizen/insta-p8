@@ -24,16 +24,16 @@ export async function POST(request: NextRequest) {
     // Preserve compatibility with the existing NOT NULL/FK user_id column.
     // This is only a legacy owner value; documents are shared globally.
     const admin = getSupabaseAdmin()
-    const { data: owner, error: ownerError } = await admin.from("users").select("id").order("created_at", { ascending: true }).limit(1).maybeSingle()
-    if (ownerError) throw ownerError
-    if (!owner) return NextResponse.json({ error: "No legacy owner record exists for the documents table. Connect an Instagram account once to initialize the app; document access itself does not require login." }, { status: 503 })
+    const { data: owner, error: ownerError } = await admin.from("users").select("id").limit(1).maybeSingle()
+    if (ownerError) { console.error("[documents] Could not find legacy owner:", ownerError); return NextResponse.json({ error: "Could not prepare document ownership: " + ownerError.message }, { status: 500 }) }
+    if (!owner) return NextResponse.json({ error: "The documents table requires a user_id linked to an existing users row, but no users row exists. Existing documents are safe; the database schema needs a one-time adjustment." }, { status: 503 })
 
     const { data, error } = await admin.from("documents").insert({ user_id: String(owner.id), title, content }).select("id,title,content,created_at,updated_at").single()
-    if (error) throw error
+    if (error) { console.error("[documents] INSERT failed:", error); return NextResponse.json({ error: "Supabase insert failed: " + error.message }, { status: 500 }) }
     return NextResponse.json(data, { status: 201 })
   } catch (error) {
     console.error("[documents] POST:", error)
-    return NextResponse.json({ error: "Could not save document." }, { status: 500 })
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Could not save document." }, { status: 500 })
   }
 }
 
