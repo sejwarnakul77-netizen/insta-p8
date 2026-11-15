@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
-import { ArrowLeft, BookOpen, FileText, Loader2, Pencil, Plus, Search, Trash2, Upload } from "lucide-react"
+import { ArrowLeft, BookOpen, Check, Copy, FileText, Loader2, Pencil, Plus, Search, Trash2, Upload } from "lucide-react"
 
 type Doc = { id: string; title: string; created_at: string; updated_at: string; content?: string }
 
@@ -56,6 +56,7 @@ export default function DocumentsPage() {
   const [error, setError] = useState("")
   const [showUpload, setShowUpload] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [linkCopied, setLinkCopied] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const load = async () => {
@@ -120,7 +121,7 @@ export default function DocumentsPage() {
       <button disabled={busy || !title.trim() || !content.trim()} onClick={save} className="mt-3 inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground disabled:opacity-50">{busy ? <Loader2 className="size-4 animate-spin"/> : editingId ? <Pencil className="size-4"/> : <Plus className="size-4"/>} {editingId ? "Save changes" : "Save to library"}</button>
     </section>}
     {selected ? <article className="overflow-hidden rounded-xl border border-border bg-card">
-      <div className="flex items-center justify-between border-b border-border px-5 py-4"><button onClick={()=>setSelected(null)} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4"/> All documents</button><div className="flex items-center gap-3"><span className="text-xs text-muted-foreground">Markdown document</span><button onClick={() => { setTitle(selected.title); setContent(selected.content || ""); setEditingId(selected.id); setShowUpload(true) }} className="inline-flex h-8 items-center gap-2 rounded-lg border border-border px-3 text-sm font-medium hover:bg-muted"><Pencil className="size-3.5"/> Edit</button></div></div>
+      <div className="flex items-center justify-between border-b border-border px-5 py-4"><button onClick={()=>setSelected(null)} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"><ArrowLeft className="size-4"/> All documents</button><div className="flex items-center gap-2"><span className="hidden text-xs text-muted-foreground sm:inline">Markdown document</span><button onClick={async () => { const url = "https://i-m-nakul-docs.vercel.app/docs/" + selected.id; try { await navigator.clipboard.writeText(url); setLinkCopied(true); window.setTimeout(() => setLinkCopied(false), 2000) } catch { setError("Could not copy link. Please copy this URL: " + url) } }} className="inline-flex h-8 items-center gap-2 rounded-lg border border-border px-3 text-sm font-medium hover:bg-muted">{linkCopied ? <Check className="size-3.5"/> : <Copy className="size-3.5"/>}{linkCopied ? "Copied!" : "Copy link"}</button><button onClick={() => { setTitle(selected.title); setContent(selected.content || ""); setEditingId(selected.id); setShowUpload(true) }} className="inline-flex h-8 items-center gap-2 rounded-lg border border-border px-3 text-sm font-medium hover:bg-muted"><Pencil className="size-3.5"/> Edit</button></div></div>
       <div className="mx-auto max-w-4xl px-6 py-10 sm:px-12"><h2 className="mb-8 text-3xl font-semibold tracking-tight">{selected.title}</h2><div className="markdown-view" dangerouslySetInnerHTML={{ __html: renderMarkdown(selected.content || "") }}/></div>
     </article> : <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
       <aside className="rounded-xl border border-border bg-card p-4"><div className="relative"><Search className="absolute left-3 top-2.5 size-4 text-muted-foreground"/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search documents" className="h-9 w-full rounded-lg border border-input bg-background pl-9 pr-3 text-sm"/></div>
